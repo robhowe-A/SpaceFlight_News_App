@@ -1,0 +1,22 @@
+﻿
+h1, h2, h3 {
+    color: #000000;
+    margin-top: 0;
+}
+
+p, li {
+    color: #006787;
+}
+
+ul {
+    margin-bottom: 0;
+}
+
+.LightOnDark {
+    background-color: aliceblue;
+    border-radius: 3em;
+}
+
+hr {
+    color: #000000;
+}

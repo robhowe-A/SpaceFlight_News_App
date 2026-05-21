@@ -1,0 +1,80 @@
+﻿@* // ==============================================================================
+// Filename: History.cshtml
+//
+// Author: Robert Howell
+/// Date: 7/28/2024
+// Version: 1.0
+//
+// Description: This is the history page in pages directory.
+//
+//
+// ==============================================================================
+ *@
+@page "/pages/history"
+@{
+#if DEBUG
+}
+@model SpaceFlight_News_App.Pages.Pages.HistoryModel
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-link nav-item">
+                    <a class="navbar-brand" href="/pages/history">History</a>
+                </li>
+                <li class="nav-link nav-item">
+                    <a class="navbar-brand" href="/pages/milestones">Milestones</a>
+                </li>
+                <li class="nav-link nav-item">
+                    <a class="navbar-brand" href="/pages/iss-science">ISS Science</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ToHhQUhdyBY?si=O6OribIEK3hu-Cdt" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+@* References?
+    MOONRISE, message from NASA Administrator
+    https://images.nasa.gov/details/NHQ_20181211_Apollo%208_Bridenstine_FINAL
+
+*@
+
+@*
+    John F Kennedy - go to the moon
+    https://images.nasa.gov/details/President%20Kennedy%20Challenges%20NASA%20to%20Go%20to%20the%20Moon
+    1:39 First, I believe that this nation should commit itself to achieving the goal before this decade is out of landing a man on the moon and returning him safely to the Earth.
+    1:52 No single space project in this period would be more impressive to mankind or more important for the long range exploration of space.
+    2:01 And none will be so difficult or expensive to accomplish.
+    Date Accessed: 6/30/2024
+*@
+
+@*
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/wluBlr1j4qk?si=HKxPfoBCyJQwalLN" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    Jay Leno tours Starbase Texas
+*@
+
+@*
+    July 20, 1969 - Apollo 11
+*@
+
+@*
+    September 13th, 2021? - Inspiration 4
+*@
+
+@*
+    September 15, 2024 - Polaris Dawn
+*@
+
+@{
+    ViewData["Title"] = "Apollo";
+}
+@{
+#endif
+}

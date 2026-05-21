@@ -1,0 +1,51 @@
+﻿@* // ==============================================================================
+// Filename: iss-science.cshtml
+//
+// Author: Robert Howell
+/// Date: 7/28/2024
+// Version: 1.0
+//
+// Description: This is the site's ISS Science page in pages directory.
+//
+//
+// ==============================================================================
+ *@
+@page "/pages/iss-science"
+@{
+#if DEBUG
+}
+@model SpaceFlight_News_App.Pages.Nasa.Iss_ScienceModel
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-link nav-item">
+                    <a class="navbar-brand" href="/pages/history">History</a>
+                </li>
+                <li class="nav-link nav-item">
+                    <a class="navbar-brand" href="/pages/milestones">Milestones</a>
+                </li>
+                <li class="nav-link nav-item">
+                    <a class="navbar-brand" href="/pages/iss-science">ISS Science</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+<iframe title="ISS-Science" 
+        width="100%"
+        height="700"
+        allowfullscreen
+        src="https://www.nasa.gov/international-space-station/space-station-research-and-technology/#post-128191"></iframe>
+
+@{
+}
+@{
+#endif
+}
