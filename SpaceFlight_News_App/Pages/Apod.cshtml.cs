@@ -1,30 +1,36 @@
+// ==============================================================================
+// Filename: Apod.cshtml.cs
+//
+// Author: Robert Howell
+// Date: 6/29/2024
+// Edited: 6/22/2026
+// Version: 1.0
+//
+// Description: The front-end page displays full details of an APOD.
+//
+//
+// ==============================================================================
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SpaceFlight_News_App.Models;
 
 namespace SpaceFlight_News_App.Pages
 {
-    public class ApodModel : PageModel
+    public class ApodModel(ILogger<ApodModel> logger) : PageModel
     {
-        public APOD[]? apods;
-        public APOD? apod;
+        public APOD[]? Apods;
+        public APOD? Apod;
 
         [BindProperty(SupportsGet = true)]
         public string Message { get; set; } = "Loading...";
         public string UnavailableToday { get; set; } = "The APOD today is unavailable.";
         public string FetchServerUnavailableMessage { get; set; } = string.Empty;
         public string FetchServerStatusCode { get; set; } = string.Empty;
-        public string FetchFailDate { get; set; }
+        public string? FetchFailDate { get; set; }
         public bool AvailableToday { get; set; } = true;
 
-        private readonly ILogger<ApodModel> _logger;
-
-        public ApodModel(ILogger<ApodModel> logger)
-        {
-            _logger = logger;
-        }
-
-        private void OnFetchServerUnavailable(object sender, FetchServerUnavailableEventArgs e)
+        private void OnFetchServerUnavailable(object? sender, FetchServerUnavailableEventArgs e)
         {
             FetchServerUnavailableMessage = e.ErrorMessage;
         }
@@ -34,41 +40,36 @@ namespace SpaceFlight_News_App.Pages
         public async Task<IActionResult> OnGet()
         {
             //var spaceFlightDataBus = new SpaceFlightDataBus();
-            apods = await _spaceFlightDataBus.GetApods();
+            Apods = await _spaceFlightDataBus.GetApods();
 
             //Log activity
             string pageLog = PageLogger.WritePageLog(this);
-            _logger.Log(LogLevel.Information, pageLog);
+            logger.Log(LogLevel.Information, pageLog);
             //End log
 
-            if (apods == null || !apods.Any())
+            if (Apods == null || !Apods.Any())
             {
                 Message = "No APODS were found.";
 
                 return Page();
             }
-            else
-            {
-                var displayAPOD = apods[0];
-                if (string.IsNullOrEmpty(apods[0].apodtitle))
-                    displayAPOD = apods[1];
+        
+            var displayApod = Apods[0];
+            if (string.IsNullOrEmpty(Apods[0].apodtitle))
+                displayApod = Apods[1];
 
-                var shortdatestr = DateTime.Today.ToShortDateString();
-                var todate = DateTime.Today.Date;
+            FetchServerUnavailableMessage = FetchServerUnavailableEventArgs.FetchErrorMessage;
+            FetchServerStatusCode = FetchServerUnavailableEventArgs.StatusCode;
+            FetchFailDate = FetchServerUnavailableEventArgs.Date.ToShortDateString();
 
-                FetchServerUnavailableMessage = FetchServerUnavailableEventArgs.FetchErrorMessage;
-                FetchServerStatusCode = FetchServerUnavailableEventArgs.StatusCode;
-                FetchFailDate = FetchServerUnavailableEventArgs.Date.ToShortDateString();
+            _spaceFlightDataBus.FetchServerUnavailable += OnFetchServerUnavailable;
 
-                _spaceFlightDataBus.FetchServerUnavailable += OnFetchServerUnavailable;
+            if (DateTime.Parse(displayApod.date) < DateTime.Today)
+                AvailableToday = false;
 
-                if (DateTime.Parse(displayAPOD.date) < DateTime.Today)
-                    AvailableToday = false;
-
-                //Display the first apod in the array
-                apod = displayAPOD;
-                return Page();
-            }
+            //Display the first apod in the array
+            Apod = displayApod;
+            return Page();
         }
     }
 }

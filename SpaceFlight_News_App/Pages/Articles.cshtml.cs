@@ -1,4 +1,15 @@
-using Microsoft.AspNetCore.Components;
+// ==============================================================================
+// Filename: Articles.cshtml.cs
+//
+// Author: Robert Howell
+// Date: 6/25/2024
+// Edited: 6/22/2026
+// Version: 1.3
+//
+// Description: This is the code-behind for the site's Articles page.
+//
+// ==============================================================================
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SpaceFlight_News_App.Models;
@@ -8,7 +19,7 @@ namespace SpaceFlight_News_App.Pages
 {
     public class ArticlesModel : PageModel
     {
-        public Article[]? articles;
+        public Article[]? Articles;
         public string? ArticleDate { get; set; }
         public string? PreviousArticleDate { get; set; }
         public string? PreviousWeekArticleDate { get; set; }
@@ -16,12 +27,12 @@ namespace SpaceFlight_News_App.Pages
         public string? NextWeekArticleDate { get; set; }
         public string? NextArticleDate { get; set; }
         public string Message { get; set; } = "Loading...";
-        public string? ViewQP { get; set; }
-        public string? NewsSiteQP { get; set; }
-        public string? SetDateQP { get; set; }
-        private string? _viewQP { get; set; }
-        private string? _newsSiteQP { get; set; }
-        private string? _setDateQP { get; set; }
+        public string? ViewQp { get; set; }
+        public string? NewsSiteQp { get; set; }
+        public string? SetDateQp { get; set; }
+        private string? _viewQp { get; set; }
+        private string? _newsSiteQp { get; set; }
+        private string? _setDateQp { get; set; }
         public string TableActive { get; set; } = string.Empty;
         public string GridActive { get; set; } = string.Empty;
         public string GridSmActive { get; set; } = string.Empty;
@@ -33,47 +44,47 @@ namespace SpaceFlight_News_App.Pages
             _logger = logger;
         }
 
-        public async Task<IActionResult> OnGet(string? SetDate, string? NewsSite, string? View)
+        public async Task<IActionResult> OnGet(string? setDate, string? newsSite, string? view)
         {
             //Set query parameters from client's render
-            SetDateQP = String.IsNullOrWhiteSpace(SetDate) ? null : SetDate.Trim();
-            NewsSiteQP = String.IsNullOrWhiteSpace(NewsSite) ? null : NewsSite.Trim();
-            ViewQP = String.IsNullOrWhiteSpace(View) ? null : View.Trim();
+            SetDateQp = String.IsNullOrWhiteSpace(setDate) ? null : setDate.Trim();
+            NewsSiteQp = String.IsNullOrWhiteSpace(newsSite) ? null : newsSite.Trim();
+            ViewQp = String.IsNullOrWhiteSpace(view) ? null : view.Trim();
 
             //Verify QPs and/or set to null
             //SetDate
             DateTime trySetDateParse;
-            if(DateTime.TryParse(SetDateQP, out trySetDateParse))
+            if(DateTime.TryParse(SetDateQp, out trySetDateParse))
             {
-                _setDateQP = trySetDateParse.ToShortDateString();
+                _setDateQp = trySetDateParse.ToShortDateString();
             }
             else
             {
-                _setDateQP = null;
+                _setDateQp = null;
             }
 
             //NewsSite
-            _newsSiteQP = NewsSiteQP == null ? null : 
-                Regex.Match(NewsSiteQP, "^[A-Za-z0-9 .]{0,48}").Value;
+            _newsSiteQp = NewsSiteQp == null ? null : 
+                Regex.Match(NewsSiteQp, "^[A-Za-z0-9 .]{0,48}").Value;
 
             //View
             string[] views = ["grid", "table", "grid-sm"];
-            if(ViewQP != null)
-                if(View != null & views.ToList().Contains(ViewQP))
+            if(ViewQp != null)
+                if(view != null & views.ToList().Contains(ViewQp))
                 {
-                    _viewQP = ViewQP;
+                    _viewQp = ViewQp;
                 }
                 else
-                    _viewQP = ViewQP ?? null;
+                    _viewQp = ViewQp ?? null;
 
             //SPECIAL: 30 DAYS SEARCH ROLLING DATA
-            if (_setDateQP != null) // keep 30 days of articles by limiting SetDate query
-                if ((DateTime.Parse(_setDateQP!) <= DateTime.Today.AddDays(-30)))
+            if (_setDateQp != null) // keep 30 days of articles by limiting SetDate query
+                if ((DateTime.Parse(_setDateQp!) <= DateTime.Today.AddDays(-30)))
                 {
-                    _setDateQP = DateTime.Today.AddDays(-30).ToShortDateString();
+                    _setDateQp = DateTime.Today.AddDays(-30).ToShortDateString();
                 }
 
-            await FetchArticlesData(_setDateQP, _newsSiteQP, _viewQP);
+            await FetchArticlesData(_setDateQp, _newsSiteQp, _viewQp);
 
             //Log activity
             string pageLog = PageLogger.WritePageLog(this);
@@ -85,70 +96,70 @@ namespace SpaceFlight_News_App.Pages
                 Message = "No articles were found matching the search string.";
                 Console.WriteLine("There is no data returned from the query!");
 
-                if (_setDateQP != null && DateTime.Parse(_setDateQP) < new DateTime(2024, 06, 18)){
+                if (_setDateQp != null && DateTime.Parse(_setDateQp) < new DateTime(2024, 06, 18)){
                     Message = "No articles earlier than 2024-06-18 are unavailable.";
                 }
-                _newsSiteQP = null;
+                _newsSiteQp = null;
 
                 return Page();
             }
             else
             {
                 // Set the date for page view
-                ArticleDate = articles![0].GetArticleDate().ToShortDateString();
+                ArticleDate = Articles![0].GetArticleDate().ToShortDateString();
 
                 return Page();
             }
         }
 
-        private async Task FetchArticlesData(string? _setDateQP, string? _newsSiteQP, string? _viewQP)
+        private async Task FetchArticlesData(string? setDateQp, string? newsSiteQp, string? viewQp)
         {
             var spaceFlightDataBus = new SpaceFlightDataBus();
 
             // Check query parameters in request
-            if (CheckForQPData(_setDateQP, _newsSiteQP, _viewQP))
+            if (CheckForQpData(setDateQp, newsSiteQp, viewQp))
             {
-                if (!String.IsNullOrEmpty(_newsSiteQP))
+                if (!String.IsNullOrEmpty(newsSiteQp))
                 {
-                    articles = await spaceFlightDataBus.QueryArticleSites(_newsSiteQP);
-                    Console.WriteLine($"There's a data fetch for articles by news site: {_newsSiteQP}");
+                    Articles = await spaceFlightDataBus.QueryArticleSites(newsSiteQp);
+                    Console.WriteLine($"There's a data fetch for articles by news site: {newsSiteQp}");
                 }
                 else
                 {
-                    if (String.IsNullOrEmpty(_setDateQP) || !DateTime.TryParse(_setDateQP, out DateTime parsedDate))
+                    if (String.IsNullOrEmpty(setDateQp) || !DateTime.TryParse(setDateQp, out DateTime parsedDate))
                     {
-                        articles = await spaceFlightDataBus.GetArticles();
+                        Articles = await spaceFlightDataBus.GetArticles();
                         Console.WriteLine($"Invalid date parameter.");
                     }
                     else
                     {
-                        articles = await spaceFlightDataBus.GetArticles(parsedDate);
-                        Console.WriteLine($"There's a data fetch for articles by date: {_setDateQP}");
+                        Articles = await spaceFlightDataBus.GetArticles(parsedDate);
+                        Console.WriteLine($"There's a data fetch for articles by date: {setDateQp}");
                     }
                 }
             }
             else
             {
-                articles = await spaceFlightDataBus.GetArticles();
+                Articles = await spaceFlightDataBus.GetArticles();
                 Console.WriteLine($"There's a general data fetch for articles.");
             }
         }
 
-        private bool CheckForQPData(string? setDateQP = null, string? newsSiteQP = null, string? viewQP = null)
+        private bool CheckForQpData(string? setDateQp = null, string? newsSiteQp = null, string? viewQp = null)
         {
-            if (viewQP == "grid")
+            if (viewQp == "grid")
             {
                 TableActive = string.Empty;
                 GridActive = "active";
                 GridSmActive = string.Empty;
             }
-            else if (viewQP == "table")
+            else if (viewQp == "table")
             {
                 TableActive = "active";
                 GridActive = string.Empty;
                 GridSmActive = string.Empty;
             }
-            else if (viewQP == "grid-sm")
+            else if (viewQp == "grid-sm")
             {
                 TableActive = string.Empty;
                 GridActive = string.Empty;
@@ -162,29 +173,28 @@ namespace SpaceFlight_News_App.Pages
             }
 
             //Check for query parameters
-            if (!String.IsNullOrEmpty(viewQP) || 
-                !String.IsNullOrEmpty(setDateQP) ||
-                !String.IsNullOrEmpty(newsSiteQP))
+            if (!String.IsNullOrEmpty(viewQp) || 
+                !String.IsNullOrEmpty(setDateQp) ||
+                !String.IsNullOrEmpty(newsSiteQp))
             { return true; } else { return false; }
         }
 
         private bool CheckArticlesNullorEmpty()
         {
-            return articles == null || articles.Length <= 0;
+            return Articles == null || Articles.Length <= 0;
         }
 
         private void CheckArticleDateIsEmpty()
         {
-            if (String.IsNullOrWhiteSpace(ArticleDate))
+            if (!String.IsNullOrWhiteSpace(ArticleDate)) return;
+
+            if (CheckArticlesNullorEmpty())
             {
-                if (CheckArticlesNullorEmpty())
-                {
-                    ArticleDate = DateTime.Now.ToShortDateString();
-                }
-                else
-                {
-                    ArticleDate = articles![0].date.Date.ToShortDateString();
-                }
+                ArticleDate = DateTime.Now.ToShortDateString();
+            }
+            else
+            {
+                ArticleDate = Articles![0].date.Date.ToShortDateString();
             }
         }
 

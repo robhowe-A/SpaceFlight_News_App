@@ -1,3 +1,15 @@
+// ==============================================================================
+// Filename: Error.cshtml.cs
+//
+// Author: Robert Howell
+// Date: 6/25/2024
+// Edited: 6/22/2026
+// Version: 1.3
+//
+// Description: This is the code-behind for the site's error page.
+//
+// ==============================================================================
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Diagnostics;

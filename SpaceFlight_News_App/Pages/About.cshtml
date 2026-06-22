@@ -3,6 +3,7 @@
 //
 // Author: Robert Howell
 // Date: 6/27/2024
+// Edited: 6/22/2026
 // Version: 1.3
 //
 // Description: This is the site's about page.
@@ -10,6 +11,7 @@
 //
 // ==============================================================================
  *@
+
 @page "/about"
 @model SpaceFlight_News_App.Pages.AboutModel
 
@@ -21,7 +23,7 @@
 <div class="LightOnDark p-5 mt-3 mb-3 container">
     <section class="mb-4">
         <h1>About Spaceflight News App</h1>
-        <p>This application is a development demonstration. It features full-stack development using modern programming practices. These features include:
+        <p>This application is a development demonstration. It features full-stack development using modern programming practices. These features include:</p>
             <ul>
                 <li>ASP.NET Core using C# programming</li>
                 <li>Server-side rendering</li>
@@ -32,7 +34,6 @@
                 <li>Running on IIS web server</li>
                 <li>DNS via Cloudflare</li>
             </ul>
-        </p>
     </section>
     <hr />
     <section>
@@ -43,9 +44,9 @@
         <p>Search is a new feature with currently limited function. Use the search box to search the database, filtering by the media source. Submitting the search string refilters the page with only the articles matching the search term.</p>
         <p>The database has these news sites available to search for:</p>
         <ul>
-        @foreach (string Site in Model.NewsSites)
+        @foreach (var site in Model.NewsSites)
         {
-            <li>@Site</li>
+            <li>@site</li>
         })
         </ul>
     </section>

@@ -1,3 +1,16 @@
+// ==============================================================================
+// Filename: Index.cshtml.cs
+//
+// Author: Robert Howell
+// Date: 1/17/2025
+// Edited: 6/22/2026
+// Version: 1.0
+//
+// Description: This is the code-behind for the site's index page.
+//
+//
+// ==============================================================================
+
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SpaceFlight_News_App.Models;
 

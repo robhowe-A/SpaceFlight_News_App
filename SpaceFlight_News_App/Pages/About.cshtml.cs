@@ -1,3 +1,16 @@
+// ==============================================================================
+// Filename: About.cshtml.cs
+//
+// Author: Robert Howell
+// Date: 6/27/2024
+// Edited: 6/22/2026
+// Version: 1.3
+//
+// Description: This is the code-behind for the site's about page.
+//
+//
+// ==============================================================================
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SpaceFlight_News_App.Models;
@@ -13,23 +26,19 @@ namespace SpaceFlight_News_App.Pages
         public async Task<IActionResult> OnGet()
         {
             //Call the database to fetch the news sites available
-            SpaceFlightDataBus spaceFlightDataBus = new SpaceFlightDataBus();
-            NewsSites = await spaceFlightDataBus.GetNewsSites() ?? ["No news sites returned."];
+            var spaceFlightDataBus = new SpaceFlightDataBus();
+            NewsSites = await spaceFlightDataBus.GetNewsSites();
 
             //Sort the list
             NewsSites.Sort();
 
-            if (NewsSites.Count >= 0 && NewsSites != null)
+            if (NewsSites.Count >= 0)
             {
                 //Remove all empty strings from the list
-                NewsSites.RemoveAll(s => s == "" || s == null);
+                NewsSites.RemoveAll(s => s == "");
+            }
 
-                return Page();
-            }
-            else
-            {
-                return Page();
-            }
+            return Page();
         }
     }
 }

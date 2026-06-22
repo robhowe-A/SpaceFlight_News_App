@@ -3,6 +3,7 @@
 //
 // Author: Robert Howell
 // Date: 6/29/2024
+// Edited: 6/22/2026
 // Version: 1.0
 //
 // Description: This page displays full details of an APOD.
@@ -10,17 +11,16 @@
 //
 // ==============================================================================
  *@
+
 @page "/apod"
 @model SpaceFlight_News_App.Pages.ApodModel
-
-@using SpaceFlight_News_App.Models;
 
 @{
     ViewData["Title"] = "APOD";
 }
 
 <section id="apoddetails" class="container">
-    @if (Model.apod == null)
+    @if (Model.Apod == null)
     {
         <p><em>@Model.Message</em></p>
     }
@@ -36,34 +36,34 @@
 
         <!-- APOD modal-->
         <div class="apod__content">
-            <h2 id="apiDate2">@Model.apod.date</h2>
-            @if (Model.apod.media == "video")
+            <h2 id="apiDate2">@Model.Apod.date</h2>
+            @if (Model.Apod.media == "video")
             {
-                if (Model.apod.hdurl.Contains("youtube.com"))
+                if (Model.Apod.hdurl.Contains("youtube.com"))
                 {
                     <iframe class="iframeLg" controls
-                        src="@Model.apod.hdurl" allowfullscreen>
+                        src="@Model.Apod.hdurl" allowfullscreen>
                     </iframe>
                 }
-                else if (Model.apod.hdurl.Contains("apod.nasa.gov"))
+                else if (Model.Apod.hdurl.Contains("apod.nasa.gov"))
                 {
                     <video autoplay controls muted preload="auto" controlslist="nodownload">
-                        <source src="@Model.apod.hdurl" type="video/mp4" />
+                        <source src="@Model.Apod.hdurl" type="video/mp4" />
                     </video>
                 }
                 else
                 {
                     <video autoplay controls muted controlslist="nodownload">
-                        <source src="@Model.apod.hdurl" type="video/mp4"/>
+                        <source src="@Model.Apod.hdurl" type="video/mp4"/>
                     </video>
                 }
             }
             else
             {
-                <img class="apiHDimg2" src="@Model.apod.hdurl" alt="image_empty">
+                <img class="apiHDimg2" src="@Model.Apod.hdurl" alt="image_empty">
             }
-            <h3 id="apiTitle">@Model.apod.apodtitle</h3>
-            <p id="apiExplanation">@Model.apod.description</p>
+            <h3 id="apiTitle">@Model.Apod.apodtitle</h3>
+            <p id="apiExplanation">@Model.Apod.description</p>
         </div> <!-- APOD modal end-->
     }
 </section>

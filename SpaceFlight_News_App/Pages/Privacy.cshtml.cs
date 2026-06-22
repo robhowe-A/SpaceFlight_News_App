@@ -1,7 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
+﻿// ==============================================================================
+// Filename: Privacy.cshtml.cs
+//
+// Author: Robert Howell
+// Date: 7/21/2024
+// Edited: 6/22/2026
+// Version: 1.0
+//
+// Description: This is the code-behind for the site's privacy page.
+//
+//
+// ==============================================================================
+
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using SpaceFlight_News_App.Models;
-using System;
-using System.Text;
 
 namespace SpaceFlight_News_App.Pages
 {

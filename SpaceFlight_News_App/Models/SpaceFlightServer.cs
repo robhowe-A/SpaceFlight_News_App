@@ -3,7 +3,7 @@
 // 
 // Author: Robert Howell
 // Date: 6/24/2024
-// Edited: 6/29/2024
+// Edited: 6/22/2026
 // Version: 2.1
 //
 // Description: This file contains the SpaceFlightServer class. This class is
@@ -14,8 +14,6 @@
 //
 // ==============================================================================
 
-using Microsoft.EntityFrameworkCore;
-using SpaceFlight_News_App.Data;
 using System.Timers;
 
 namespace SpaceFlight_News_App.Models
@@ -23,41 +21,38 @@ namespace SpaceFlight_News_App.Models
     internal sealed class SpaceFlightServer
     {
         // Instance of SpaceFlightServer begins background processing tasks.
-        public SpaceFlightServer(){ }
-
         // Return timespans, which print out in friendly hour-min-seconds format
-        public TimeSpan articleFetchTimerMilliseconds
-        {
-            get { return TimeSpan.FromMilliseconds(this.ArticlesOneHourTimer.Interval); }
-        }
-        public TimeSpan apodFetchTimerMilliseconds
-        {
-            get { return TimeSpan.FromMilliseconds(this.ApodFiveHourTimer.Interval); }
-        }
+        public TimeSpan ArticleFetchTimerMilliseconds
+        => TimeSpan.FromMilliseconds(this._articlesOneHourTimer.Interval);
+
+        public TimeSpan ApodFetchTimerMilliseconds
+        => TimeSpan.FromMilliseconds(this._apodFiveHourTimer.Interval);
 
         // Timers set for 20 minutes and 30 minutes, used for data fetches
-        private readonly System.Timers.Timer ArticlesOneHourTimer = new System.Timers.Timer(3600000); //60 minutes
-        private readonly System.Timers.Timer ApodFiveHourTimer = new System.Timers.Timer(18000000); //300 minutes
+        private readonly System.Timers.Timer _articlesOneHourTimer = new System.Timers.Timer(3600000); //60 minutes
+        private readonly System.Timers.Timer _apodFiveHourTimer = new System.Timers.Timer(18000000); //300 minutes
 
         //
         // Summary:
         //     Begin backend server operation.
         //
-        // 
+        //
         public void Start()
         {
             // Ensure database is seeded with data, first
-            SpaceFlightDataBus spaceFlightDataBus = new SpaceFlightDataBus();
+            var spaceFlightDataBus = new SpaceFlightDataBus();
             //Seed database, if empty.
             spaceFlightDataBus.CheckForDatabaseData();
             Console.WriteLine("Completed database data check.");
 
             // Step 1: Create a new Thread
-            Thread myThread = new Thread(new ThreadStart(ScheduleDataFetch));
+            var myThread = new Thread(ScheduleDataFetch)
+                   {
+                          Name = "Timed Data Fetch",
+                          IsBackground = true,
+                          Priority = ThreadPriority.Normal
+                   };
 
-            myThread.Name = "Timed Data Fetch";
-            myThread.IsBackground = true;
-            myThread.Priority = ThreadPriority.Normal;
             Console.WriteLine($"Fetch thread state is: {myThread.ThreadState.ToString()}");
 
             // Step 2: Start the Thread
@@ -66,9 +61,9 @@ namespace SpaceFlight_News_App.Models
 
 
             // Step 3: Main thread continues here.
-            onTimedCreateArticlesContext(); //fetch once
-            onTimedCreateApodContext(); //fetch once
-            
+            OnTimedCreateArticlesContext(); //fetch once
+            OnTimedCreateApodContext(); //fetch once
+
             Console.WriteLine("Main thread continues.");
         }
 
@@ -78,13 +73,13 @@ namespace SpaceFlight_News_App.Models
             try
             {
                 // Use your context here
-                ArticlesOneHourTimer.Elapsed += onTimedCreateArticlesContext;
-                ArticlesOneHourTimer.AutoReset = true;
-                ArticlesOneHourTimer.Enabled = true;
+                _articlesOneHourTimer.Elapsed += OnTimedCreateArticlesContext;
+                _articlesOneHourTimer.AutoReset = true;
+                _articlesOneHourTimer.Enabled = true;
 
-                ApodFiveHourTimer.Elapsed += onTimedCreateApodContext;
-                ApodFiveHourTimer.AutoReset = true;
-                ApodFiveHourTimer.Enabled = true;
+                _apodFiveHourTimer.Elapsed += OnTimedCreateApodContext;
+                _apodFiveHourTimer.AutoReset = true;
+                _apodFiveHourTimer.Enabled = true;
 
                 //Keep this thread alive to allow schedule to continue
                 //await Task.Delay(TimeSpan.FromHours(1));
@@ -96,35 +91,35 @@ namespace SpaceFlight_News_App.Models
         }
 
         // Function called for timed article fetch
-        private async void onTimedCreateArticlesContext()
+        private async void OnTimedCreateArticlesContext()
         {
-            onTimedFetchArticles();
+            OnTimedFetchArticles();
         }
-        private async void onTimedCreateArticlesContext(Object? source, ElapsedEventArgs? e)
+        private async void OnTimedCreateArticlesContext(object? source, ElapsedEventArgs? e)
         {
-            onTimedFetchArticles();
+            OnTimedFetchArticles();
         }
 
-        private async void onTimedFetchArticles()
+        private async void OnTimedFetchArticles()
         {
             SpaceFlightDataBus spaceFlightDataBus = new SpaceFlightDataBus();
-            await spaceFlightDataBus.onTimedEventFetchArticles();
+            await spaceFlightDataBus.OnTimedEventFetchArticles();
         }
 
         // Function called for timed apod fetch
-        private async void onTimedCreateApodContext()
+        private async void OnTimedCreateApodContext()
         {
-            onTimedFetchApod();
+            OnTimedFetchApod();
         }
-        private async void onTimedCreateApodContext(Object? source, ElapsedEventArgs? e)
+        private async void OnTimedCreateApodContext(object? source, ElapsedEventArgs? e)
         {
-            onTimedFetchApod();
+            OnTimedFetchApod();
         }
 
-        private async void onTimedFetchApod()
+        private static async void OnTimedFetchApod()
         {
             SpaceFlightDataBus spaceFlightDataBus = new SpaceFlightDataBus();
-            await spaceFlightDataBus.onTimedEventFetchApods();
+            await spaceFlightDataBus.OnTimedEventFetchApods();
         }
     };
 }

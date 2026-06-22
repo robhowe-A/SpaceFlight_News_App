@@ -3,6 +3,7 @@
 // 
 // Author: Robert Howell
 // Date: 6/24/2024
+// Edited: 6/22/2026
 // Version: 1.2
 //
 // Description: This file hold the database class, using connection context for
@@ -12,35 +13,30 @@
 
 using Microsoft.EntityFrameworkCore;
 using SpaceFlight_News_App.Data;
-using System.Security.Cryptography;
 
 namespace SpaceFlight_News_App.Models
 {
     internal sealed class SpaceFlightDatabase : IDisposable
     {
-        public bool isArticleEmpty = true;
-        public bool isApodEmpty = true;
-        private readonly Spaceflight_News_MySQLContext _context;
+        public bool IsArticleEmpty = true;
+        public bool IsApodEmpty = true;
+        private readonly SpaceflightNewsMySqlContext _context;
         public SpaceFlightDatabase()
         {
-            if (_context == null)
-            {
-                try
-                {
-                    //Create a context for this backend request to use
-                    IConfiguration configuration = new ConfigurationBuilder()
-                        .AddJsonFile("appsettings.json") //connection string is in appsettings.json
-                        .Build();
+            if (_context != null) return;
 
-                    _context = new Spaceflight_News_MySQLContext(configuration.GetConnectionString("Spaceflight_News_MySQLContext") ?? throw new NullReferenceException("Failed to fetch the connection string."));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"An error occurred while creating the database context: {ex.Message}");
-                }
-            }
+            //Create a context for this backend request to use
+            IConfiguration configuration = new ConfigurationBuilder()
+                                          .AddJsonFile("appsettings.json") //connection string is in appsettings.json
+                                          .Build();
+
+            _context =
+                    new SpaceflightNewsMySqlContext(configuration
+                                                             .GetConnectionString("Spaceflight_News_MySQLContext") ??
+                                                      throw new
+                                                              NullReferenceException("Failed to fetch the connection string."));
         }
-        public SpaceFlightDatabase(Spaceflight_News_MySQLContext context)
+        public SpaceFlightDatabase(SpaceflightNewsMySqlContext context)
         {
             _context = context;
         }
@@ -89,9 +85,9 @@ namespace SpaceFlight_News_App.Models
         public async Task<APOD[]> RetrieveApods()
         {
             //Return only the latest APOD from the database
-            var newestAPOD = (from a in _context.APOD orderby a.id descending select a).Take(5);
+            var newestApod = (from a in _context.APOD orderby a.id descending select a).Take(5);
 
-            return await newestAPOD.ToArrayAsync();
+            return await newestApod.ToArrayAsync();
         }
 
         // Add new articles to the database
@@ -157,21 +153,18 @@ namespace SpaceFlight_News_App.Models
             {
                 SeedArticleDatabase();
             }
-            isArticleEmpty = false;
+            IsArticleEmpty = false;
 
             // Check for APODs.
             if (!_context.APOD.Any())
             {
                 SeedApodDatabase();
             }
-            isApodEmpty = false;
+            IsApodEmpty = false;
 
             ContextDispose();
         }
 
-
-        //TODO: add apod database
-        // private async Task<APOD SetApods() { //Add Apods to database};
         private void SeedArticleDatabase()
         {
             _context.Article.AddRange(
@@ -205,14 +198,7 @@ namespace SpaceFlight_News_App.Models
         }
         private void ContextDispose()
         {
-            if (_context != null)
-            {
-                _context.Dispose();
-            }
-            else
-            {
-                Console.WriteLine("Missing context, check function declarations.");
-            }
+            _context.Dispose();
         }
         public void Dispose()
         {

@@ -3,6 +3,7 @@
 // 
 // Author: Robert Howell
 // Date: 6/24/2024
+// Edited: 6/22/2026
 // Version: 1.0
 //
 // Description: This file is inert. It is a placeholder for future development.
@@ -15,21 +16,19 @@ namespace SpaceFlight_News_App.Models
 {
     public class DatabaseConnection
     {
-        private readonly Spaceflight_News_MySQLContext _context;
+        private readonly SpaceflightNewsMySqlContext _context;
 
-
-        public DatabaseConnection(Spaceflight_News_MySQLContext context)
+        public DatabaseConnection(SpaceflightNewsMySqlContext context)
         {
             _context = context;
         }
 
-        public void getModel()
+        public void GetModel()
         {
-            using (var context = _context)
-            {
-                Console.WriteLine(context.Model);
-                // Now you can use the connection to execute your queries
-            }
+            using var context = _context;
+
+            Console.WriteLine(context.Model);
+            // Now you can use the connection to execute your queries
         }
     };
 }

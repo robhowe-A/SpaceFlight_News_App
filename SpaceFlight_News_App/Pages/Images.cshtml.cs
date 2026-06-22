@@ -1,3 +1,15 @@
+// ==============================================================================
+// Filename: Images.cshtml.cs
+//
+// Author: Robert Howell
+// Date: 7/28/2024
+// Edited: 6/22/2026
+// Version: 1.0
+//
+// Description: This is the code-behind for the site's images page.
+//
+// ==============================================================================
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using SpaceFlight_News_App.Models;
