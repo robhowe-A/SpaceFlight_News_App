@@ -30,6 +30,6 @@ namespace SpaceFlight_News_App.Models
         [JsonPropertyName("media_type")]
         public string media { get; set; } = string.Empty;
         [Key]
-        public int id { get; set; }
+        public int id { get; set; } = -1;
     };
 }
