@@ -16,7 +16,7 @@
 
 using System.Timers;
 
-namespace SpaceFlight_News_App.Models
+namespace SpaceFlight_News_App.Background
 {
     internal sealed class SpaceFlightServer
     {

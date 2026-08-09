@@ -3,8 +3,8 @@
 // 
 // Author: Robert Howell
 // Date: 6/24/2024
-// Edited: 6/22/2026
-// Version: 1.2
+// Edited: 8/9/2026
+// Version: 1.3
 //
 // Description: This file hold the database class, using connection context for
 // data transactions.
@@ -14,7 +14,7 @@
 using Microsoft.EntityFrameworkCore;
 using SpaceFlight_News_App.Data;
 
-namespace SpaceFlight_News_App.Models
+namespace SpaceFlight_News_App.Background
 {
     internal sealed class SpaceFlightDatabase : IDisposable
     {
@@ -46,46 +46,37 @@ namespace SpaceFlight_News_App.Models
             ContextDispose();
         }
 
-        public async Task<Article[]> RetrieveArticles()
+        public async Task<Article[]> SelectArticles(DateTime currentDate)
         {
-            //Reference the current date for article retrieval
-            DateTime targetDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-
-            //Return articles from today
-            var articlesToday = (from a in _context.Article orderby a.articleNum where a.date.Date == targetDate select a);
-            return await articlesToday.ToArrayAsync();
-        }
-
-        public async Task<Article[]> RetrieveArticles(DateTime currentDate)
-        {
-            //Reference the current date for article retrieval
-            DateTime targetDate = new DateTime(int.Parse(currentDate.Date.Year.ToString()), int.Parse(currentDate.Date.Month.ToString()), int.Parse(currentDate.Date.Day.ToString()));
-
-            //Return articles from a specific date
-            var articlesSpecificDate = (from a in _context.Article orderby a.articleNum where a.date.Date == targetDate select a);
+            DateTime targetDate = currentDate;
+            var articlesSpecificDate = (from a in _context.Article orderby a.articleNum where a.date.Date == currentDate select a);
             return await articlesSpecificDate.ToArrayAsync();
         }
 
-        public async Task<Article[]> RetrieveArticlesWithImages()
+        public async Task<Article[]> SelectArticlesWithImages()
         {
-            //Return only the latest 10 articles from the database
             var newestTenArticles = (from a in _context.Article where !string.IsNullOrEmpty(a.textURL) orderby a.articleNum descending select a);
 
             return await newestTenArticles.ToArrayAsync();
         }
 
-        public async Task<DateTime[]> RetrieveOldestArticleDateTime()
+        public async Task<DateTime[]> SelectOldestArticleDateTime()
         {
-            //Return only the latest 10 articles from the database
-            var oldestArticleDate = (from a in _context.Article orderby a.date ascending where a.date >= new DateTime(2024, 06, 18) select a.date).Take(20);
+            var oldestArticleDate = (from a in _context.Article orderby a.date ascending where a.date >= new DateTime(2024, 06, 18) select a.date).Take(1);
 
             return await oldestArticleDate.ToArrayAsync();
         }
 
-        public async Task<APOD[]> RetrieveApods()
+        public async Task<APOD[]> SelectNewestApods()
         {
-            //Return only the latest APOD from the database
             var newestApod = (from a in _context.APOD orderby a.id descending select a).Take(5);
+
+            return await newestApod.ToArrayAsync();
+        }
+
+        public async Task<APOD[]> SelectNewestApod()
+        {
+            var newestApod = (from a in _context.APOD orderby a.date descending select a).Take(1);
 
             return await newestApod.ToArrayAsync();
         }
@@ -130,7 +121,7 @@ namespace SpaceFlight_News_App.Models
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Article[]> QueryArticleSites(string newsSiteInputValue)
+        public async Task<Article[]> SelectArticleSites(string newsSiteInputValue)
         {
             //Return the articles matching a provider
             var newSiteArticles = from a in _context.Article where (a.newsSite == newsSiteInputValue && a.date >= DateTime.Now.AddDays(-30))select a;
@@ -138,7 +129,7 @@ namespace SpaceFlight_News_App.Models
             return await newSiteArticles.ToArrayAsync();
         }
 
-        public async Task<List<string>> GetNewsSites()
+        public async Task<List<string>> SelectNewsSites()
         {
             //Get the news sites from the Article table
             var newsSites = from a in _context.Article select a.newsSite;

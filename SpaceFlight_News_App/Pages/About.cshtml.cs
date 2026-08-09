@@ -13,7 +13,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using SpaceFlight_News_App.Models;
+using SpaceFlight_News_App.Background;
 
 namespace SpaceFlight_News_App.Pages
 {

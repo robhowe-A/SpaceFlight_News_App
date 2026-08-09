@@ -15,7 +15,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace SpaceFlight_News_App.Models
+namespace SpaceFlight_News_App.Background
 {
     public class Result
     {

@@ -12,7 +12,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using SpaceFlight_News_App.Models;
+using SpaceFlight_News_App.Background;
 using System.Text.RegularExpressions;
 
 namespace SpaceFlight_News_App.Pages
@@ -121,14 +121,14 @@ namespace SpaceFlight_News_App.Pages
             {
                 if (!String.IsNullOrEmpty(newsSiteQp))
                 {
-                    Articles = await spaceFlightDataBus.QueryArticleSites(newsSiteQp);
+                    Articles = await spaceFlightDataBus.GetArticleSites(newsSiteQp);
                     Console.WriteLine($"There's a data fetch for articles by news site: {newsSiteQp}");
                 }
                 else
                 {
                     if (String.IsNullOrEmpty(setDateQp) || !DateTime.TryParse(setDateQp, out DateTime parsedDate))
                     {
-                        Articles = await spaceFlightDataBus.GetArticles();
+                        Articles = await spaceFlightDataBus.GetArticles(null);
                         Console.WriteLine($"Invalid date parameter.");
                     }
                     else
@@ -140,7 +140,7 @@ namespace SpaceFlight_News_App.Pages
             }
             else
             {
-                Articles = await spaceFlightDataBus.GetArticles();
+                Articles = await spaceFlightDataBus.GetArticles(null);
                 Console.WriteLine($"There's a general data fetch for articles.");
             }
         }

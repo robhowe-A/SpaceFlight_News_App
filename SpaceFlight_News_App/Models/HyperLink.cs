@@ -10,7 +10,7 @@
 //
 // ==============================================================================
 
-namespace SpaceFlight_News_App.Models
+namespace SpaceFlight_News_App.Background
 {
     public class HyperLink(string href, string textContent)
     {

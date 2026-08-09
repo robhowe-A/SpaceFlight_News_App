@@ -12,7 +12,7 @@
 
 using SpaceFlight_News_App.Data;
 
-namespace SpaceFlight_News_App.Models
+namespace SpaceFlight_News_App.Background
 {
     public class DatabaseConnection
     {

@@ -13,7 +13,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using SpaceFlight_News_App.Models;
+using SpaceFlight_News_App.Background;
 
 namespace SpaceFlight_News_App.Pages
 {
@@ -40,7 +40,7 @@ namespace SpaceFlight_News_App.Pages
         public async Task<IActionResult> OnGet()
         {
             //var spaceFlightDataBus = new SpaceFlightDataBus();
-            Apods = await _spaceFlightDataBus.GetApods();
+            Apods = await _spaceFlightDataBus.GetNewestApod();
 
             //Log activity
             string pageLog = PageLogger.WritePageLog(this);
