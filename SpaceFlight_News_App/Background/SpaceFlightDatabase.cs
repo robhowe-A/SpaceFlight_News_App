@@ -25,13 +25,8 @@ namespace SpaceFlight_News_App.Background
         {
             if (_context != null) return;
 
-            //Create a context for this backend request to use
-            IConfiguration configuration = new ConfigurationBuilder()
-                                          .AddJsonFile("appsettings.json") //connection string is in appsettings.json
-                                          .Build();
-
             _context =
-                    new SpaceflightNewsMySqlContext(configuration
+                    new SpaceflightNewsMySqlContext(BackgroundSettingsProvider.AppSettingsConfiguration
                                                              .GetConnectionString("Spaceflight_News_MySQLContext") ??
                                                       throw new
                                                               NullReferenceException("Failed to fetch the connection string."));
