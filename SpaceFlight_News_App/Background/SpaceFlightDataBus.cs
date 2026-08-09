@@ -10,20 +10,17 @@
 //
 // ==============================================================================
 
-using System.Net;
-using System.Text.Json;
-
 namespace SpaceFlight_News_App.Background
 {
     // <summary>
     //     SpaceFlightDataBus class is responsible for fetching/retrieving data from the database.
     //     Each object created creates a new database context.
     // </summary>
-    public sealed class SpaceFlightDataBus
+    internal class SpaceFlightDataBus
     {
-        private SpaceFlightDatabase _spaceflightDatabase;
+        protected SpaceFlightDatabase _spaceflightDatabase;
 
-        private static IConfiguration configuration = BackgroundSettingsProvider.AppSettingsConfiguration;
+        protected static IConfiguration configuration = BackgroundSettingsProvider.AppSettingsConfiguration;
 
         public SpaceFlightDataBus()
         {
@@ -134,100 +131,8 @@ namespace SpaceFlight_News_App.Background
         
         public event EventHandler<FetchServerUnavailableEventArgs>? FetchServerUnavailable;
 
-        private void OnFetchServerUnavailable(FetchServerUnavailableEventArgs e) { 
+        protected void OnFetchServerUnavailable(FetchServerUnavailableEventArgs e) { 
             FetchServerUnavailable?.Invoke(this, e); // Null-check and invoke
-        }
-
-        public async Task OnTimedEventFetchArticles()
-        {
-            var sfnApiKey = configuration.GetConnectionString("SFN_API_KEY") ?? throw new NullReferenceException("Missing article environment variable.");
-
-            Console.WriteLine($"RequestURL is: {sfnApiKey}");
-            try
-            {
-                var jsonString = await new ExternalApiHttpService().GetStringAsync(sfnApiKey);
-                var results = JsonSerializer.Deserialize<Result>(jsonString);
-
-                if (results == null)
-                {
-                    Console.Write("No results from fetch.");
-                }
-                else
-                {
-                    if (results.articles == null || !results.articles.Any())
-                    {
-                        //Articles not in results array
-                        Console.WriteLine($"Successful fetch and there are no articles.");
-                    }
-                    else
-                    {
-                        var articles = results.articles;
-                        var articlesSorted = articles.OrderBy(a => a.id).ToList();
-
-                        await _spaceflightDatabase.SetArticles(articlesSorted);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred in onTimedEventFetchArticles: {ex.Message}");
-            }
-            finally
-            {
-                _spaceflightDatabase.Dispose();
-            }
-        }
-
-        public async Task OnTimedEventFetchApods()
-        {
-            var apodApiKey = configuration.GetConnectionString("APOD_API_KEY") ?? throw new NullReferenceException("Missing apod environment variable.");
-
-            try
-            {
-                var apod = new APOD();
-
-                try
-                {
-                    var jsonString = await new ExternalApiHttpService().GetStringAsync(apodApiKey);
-
-                    if (string.IsNullOrWhiteSpace(jsonString))
-                    {
-                        Console.WriteLine($"Fetch resulted in an empty set;");
-                    }
-                    else
-                    {
-                        apod = JsonSerializer.Deserialize<APOD>(jsonString) ?? new APOD();
-                        apod.id = 0;
-                    }
-
-                }
-                catch (HttpRequestException e)
-                {
-                    if (e.StatusCode == HttpStatusCode.ServiceUnavailable || e.StatusCode == HttpStatusCode.GatewayTimeout)
-                    {
-                        OnFetchServerUnavailable(new FetchServerUnavailableEventArgs($"{e.Message}", $"{e.StatusCode.ToString()}"));
-                        Console.WriteLine($"Error occurred fetching APOD.");
-                    }
-                }
-
-                if (apod.id == -1)
-                {
-                    //Response body is null
-                    Console.WriteLine($"Successful fetch, however there are no articles.");
-                }
-                else
-                {
-                    await _spaceflightDatabase.SetApods(apod);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred in onTimedEventFetchApods: {ex.Message}");
-            }
-            finally
-            {
-                _spaceflightDatabase.Dispose();
-            }
         }
 
         public void CheckForDatabaseData()

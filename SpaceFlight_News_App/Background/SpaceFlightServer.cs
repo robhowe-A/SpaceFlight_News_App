@@ -3,7 +3,7 @@
 // 
 // Author: Robert Howell
 // Date: 6/24/2024
-// Edited: 6/22/2026
+// Edited: 8/9/2026
 // Version: 2.1
 //
 // Description: This file contains the SpaceFlightServer class. This class is
@@ -102,8 +102,7 @@ namespace SpaceFlight_News_App.Background
 
         private async void OnTimedFetchArticles()
         {
-            SpaceFlightDataBus spaceFlightDataBus = new SpaceFlightDataBus();
-            await spaceFlightDataBus.OnTimedEventFetchArticles();
+            await new DatabusTimedEvent().OnTimedEventFetchArticles();
         }
 
         // Function called for timed apod fetch
@@ -118,8 +117,7 @@ namespace SpaceFlight_News_App.Background
 
         private static async void OnTimedFetchApod()
         {
-            SpaceFlightDataBus spaceFlightDataBus = new SpaceFlightDataBus();
-            await spaceFlightDataBus.OnTimedEventFetchApods();
+            await new DatabusTimedEvent().OnTimedEventFetchApods();
         }
     };
 }
