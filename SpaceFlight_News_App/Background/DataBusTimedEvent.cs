@@ -51,6 +51,7 @@ namespace SpaceFlight_News_App.Background
             finally
             {
                 _spaceflightDatabase.Dispose();
+                WriteConsoleMessage($"Timed article fetch completed.");
             }
         }
 
@@ -97,6 +98,7 @@ namespace SpaceFlight_News_App.Background
             finally
             {
                 _spaceflightDatabase.Dispose();
+                WriteConsoleMessage($"Timed apod fetch completed.");
             }
         }
     };

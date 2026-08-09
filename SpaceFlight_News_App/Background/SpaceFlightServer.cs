@@ -14,36 +14,39 @@
 //
 // ==============================================================================
 
-using System.Timers;
-
 namespace SpaceFlight_News_App.Background
 {
-    internal sealed class SpaceFlightServer
+    internal sealed class SpaceFlightServer : IProcessLogging
     {
         // Instance of SpaceFlightServer begins background processing tasks.
         // Return timespans, which print out in friendly hour-min-seconds format
         public TimeSpan ArticleFetchTimerMilliseconds
-        => TimeSpan.FromMilliseconds(this._articlesOneHourTimer.Interval);
+            => TimeSpan.FromMilliseconds(this._articlesOneHourTimer.Interval);
 
         public TimeSpan ApodFetchTimerMilliseconds
-        => TimeSpan.FromMilliseconds(this._apodFiveHourTimer.Interval);
+            => TimeSpan.FromMilliseconds(this._apodFiveHourTimer.Interval);
 
         // Timers set for 20 minutes and 30 minutes, used for data fetches
         private readonly System.Timers.Timer _articlesOneHourTimer = new System.Timers.Timer(3600000); //60 minutes
         private readonly System.Timers.Timer _apodFiveHourTimer = new System.Timers.Timer(18000000); //300 minutes
+
+        private LocalProcessInfo _localProcess { get; } = new LocalProcessInfo();
+        private BackgroundFetch _timedFetch { get; } = new BackgroundFetch();
 
         //
         // Summary:
         //     Begin backend server operation.
         //
         //
-        public void Start()
+        public LocalProcessInfo Start()
         {
+
             // Ensure database is seeded with data, first
             var spaceFlightDataBus = new SpaceFlightDataBus();
             //Seed database, if empty.
             spaceFlightDataBus.CheckForDatabaseData();
-            Console.WriteLine("Completed database data check.");
+
+            WriteConsoleMessage(_localProcess, "Completed database data check.");
 
             // Step 1: Create a new Thread
             var myThread = new Thread(ScheduleDataFetch)
@@ -53,71 +56,43 @@ namespace SpaceFlight_News_App.Background
                           Priority = ThreadPriority.Normal
                    };
 
-            Console.WriteLine($"Fetch thread state is: {myThread.ThreadState.ToString()}");
+            WriteConsoleMessage(_localProcess, $"Fetch thread state is: {myThread.ThreadState.ToString()}");
 
             // Step 2: Start the Thread
             myThread.Start();
-            Console.WriteLine($"Fetch thread state is: {myThread.ThreadState.ToString()}");
-
+            WriteConsoleMessage(_localProcess, $"Fetch thread state is: {myThread.ThreadState.ToString()}");
 
             // Step 3: Main thread continues here.
-            OnTimedCreateArticlesContext(); //fetch once
-            OnTimedCreateApodContext(); //fetch once
+            _timedFetch.OnTimedCreateArticlesContext(); //fetch once
+            _timedFetch.OnTimedCreateApodContext(); //fetch once
 
-            Console.WriteLine("Main thread continues.");
+            WriteConsoleMessage(_localProcess, "Main thread continues.");
+
+            return _localProcess;
         }
 
-        // Data fetches are scheduled to add database data on a schedule
+        /// <summary>
+        /// Data fetches are scheduled to add database data on a schedule
+        /// </summary>
         private async void ScheduleDataFetch()
         {
+            WriteConsoleMessage($"Background thread started.");
+
             try
             {
-                // Use your context here
-                _articlesOneHourTimer.Elapsed += OnTimedCreateArticlesContext;
+                _articlesOneHourTimer.Elapsed += _timedFetch.OnTimedCreateArticlesContext;
                 _articlesOneHourTimer.AutoReset = true;
                 _articlesOneHourTimer.Enabled = true;
 
-                _apodFiveHourTimer.Elapsed += OnTimedCreateApodContext;
+                _apodFiveHourTimer.Elapsed += _timedFetch.OnTimedCreateApodContext;
                 _apodFiveHourTimer.AutoReset = true;
                 _apodFiveHourTimer.Enabled = true;
 
-                //Keep this thread alive to allow schedule to continue
-                //await Task.Delay(TimeSpan.FromHours(1));
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in ScheduleDataFetch: {ex.Message}");
+                WriteConsoleMessage($"Error in ScheduleDataFetch: {ex.Message}\n{ex.StackTrace}");
             }
-        }
-
-        // Function called for timed article fetch
-        private async void OnTimedCreateArticlesContext()
-        {
-            OnTimedFetchArticles();
-        }
-        private async void OnTimedCreateArticlesContext(object? source, ElapsedEventArgs? e)
-        {
-            OnTimedFetchArticles();
-        }
-
-        private async void OnTimedFetchArticles()
-        {
-            await new DatabusTimedEvent().OnTimedEventFetchArticles();
-        }
-
-        // Function called for timed apod fetch
-        private async void OnTimedCreateApodContext()
-        {
-            OnTimedFetchApod();
-        }
-        private async void OnTimedCreateApodContext(object? source, ElapsedEventArgs? e)
-        {
-            OnTimedFetchApod();
-        }
-
-        private static async void OnTimedFetchApod()
-        {
-            await new DatabusTimedEvent().OnTimedEventFetchApods();
         }
     };
 }

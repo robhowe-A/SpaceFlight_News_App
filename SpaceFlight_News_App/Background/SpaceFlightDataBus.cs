@@ -16,7 +16,7 @@ namespace SpaceFlight_News_App.Background
     //     SpaceFlightDataBus class is responsible for fetching/retrieving data from the database.
     //     Each object created creates a new database context.
     // </summary>
-    internal class SpaceFlightDataBus
+    internal class SpaceFlightDataBus : IProcessLogging
     {
         protected SpaceFlightDatabase _spaceflightDatabase;
 
