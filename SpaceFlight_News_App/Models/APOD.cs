@@ -22,6 +22,9 @@ namespace SpaceFlight_News_App.Background
         public string date { get; set; } = string.Empty;
 
         [JsonPropertyName("url")]
+        public string? url { get; set; } = string.Empty;
+
+        [JsonPropertyName("hdurl")]
         public string hdurl { get; set; } = string.Empty;
 
         [JsonPropertyName("explanation")]

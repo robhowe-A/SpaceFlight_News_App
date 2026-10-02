@@ -25,6 +25,7 @@ namespace SpaceFlight_News_App.Background
 
         public TimeSpan ApodFetchTimerMilliseconds
             => TimeSpan.FromMilliseconds(this._apodFiveHourTimer.Interval);
+        public LocalProcessInfo LocalProcess { get => _localProcess; }
 
         // Timers set for 20 minutes and 30 minutes, used for data fetches
         private readonly System.Timers.Timer _articlesOneHourTimer = new System.Timers.Timer(3600000); //60 minutes
@@ -38,7 +39,7 @@ namespace SpaceFlight_News_App.Background
         //     Begin backend server operation.
         //
         //
-        public LocalProcessInfo Start()
+        public void Start()
         {
 
             // Ensure database is seeded with data, first
@@ -67,8 +68,6 @@ namespace SpaceFlight_News_App.Background
             _timedFetch.OnTimedCreateApodContext(); //fetch once
 
             WriteConsoleMessage(_localProcess, "Main thread continues.");
-
-            return _localProcess;
         }
 
         /// <summary>

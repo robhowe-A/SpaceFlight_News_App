@@ -57,7 +57,9 @@ namespace SpaceFlight_News_App.Background
 
         public async Task OnTimedEventFetchApods()
         {
-            var apodApiKey = configuration.GetConnectionString("APOD_API_KEY") ?? throw new NullReferenceException("Missing apod environment variable.");
+            var apodApiKey = configuration.GetConnectionString("APOD_API_KEY") 
+                + DateTime.Now.ToString("yyMMdd")
+                ?? throw new NullReferenceException("Missing apod environment variable.");
 
             try
             {
